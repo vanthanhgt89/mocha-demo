@@ -49,12 +49,31 @@ describe('create table todolist', () => {
                 // const table_names = Array.from(tables.keys());
                 // console.log(tables);
                 // console.log(table_names);
+                // tables.includes('todolist')
                 return tables.has('todolist');
             })
         return check_exists.should.eventually.equal(true);
     })
     it('insert into 4record in todolist', () => {
-        let count = db.any("insert into todolist (title, completed ) values ('Todo 1', 'true'), ('Todo 2', 'true'), ('Todo 3', 'false'), ('Todo 4', 'true') ")
+
+        const count = db.none("insert into todolist (title, completed ) values ('Todo 1', 'true'), ('Todo 2', 'true'), ('Todo 3', 'false'), ('Todo 4', 'true') ")
+            .then(() => {
+                return db.one('select count (title) from todolist')
+                    .then(data => {
+                        console.log(data.count);
+                        return parseInt(data.count)
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        return 'err'
+                    })
+            })
+            .catch(err => {
+                console.log(err)
+                return 'failed'
+            })
+
+        return count.should.eventually.equal(4)
     })
 })
 
